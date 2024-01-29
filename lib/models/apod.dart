@@ -1,3 +1,5 @@
+import 'package:apod/apod_hive.dart';
+
 class Apod {
   final String title;
   final String explanation;
@@ -10,6 +12,15 @@ class Apod {
       required this.url,
       required this.date});
 
+  ApodHive toApodHive() {
+    return ApodHive(
+      date: date,
+      explanation: explanation,
+      title: title,
+      url: url,
+    );
+  }
+
   factory Apod.fromJson(Map<String, dynamic> json) {
     return Apod(
       title: json['title'],
@@ -18,4 +29,13 @@ class Apod {
       date: json['date'],
     );
   }
+}
+
+Apod apodHiveToApod(ApodHive apodHive) {
+  return Apod(
+    date: apodHive.date,
+    explanation: apodHive.explanation,
+    title: apodHive.title,
+    url: 'file://${apodHive.url}',
+  );
 }

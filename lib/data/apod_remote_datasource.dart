@@ -1,5 +1,5 @@
-import 'package:apod/apod.dart';
-import 'package:apod/dio_interceptor.dart';
+import 'package:apod/models/apod.dart';
+import 'package:apod/helpers/dio_interceptor.dart';
 import 'package:dio/dio.dart';
 
 class ApodRemoteDataSource {

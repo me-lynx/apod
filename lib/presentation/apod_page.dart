@@ -1,5 +1,5 @@
-import 'package:apod/apod.dart';
-import 'package:apod/date_formatter.dart';
+import 'package:apod/models/apod.dart';
+import 'package:apod/helpers/date_formatter.dart';
 import 'package:flutter/material.dart';
 
 class ApodPage extends StatelessWidget {
@@ -32,14 +32,17 @@ class ApodPage extends StatelessWidget {
                     color: Colors.black.withOpacity(0.5),
                     padding: const EdgeInsets.all(16),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          apod.title,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                        Center(
+                          child: Text(
+                            maxLines: 2,
+                            apod.title,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 8),
