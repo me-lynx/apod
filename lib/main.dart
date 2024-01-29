@@ -1,14 +1,17 @@
+import 'package:apod/date_formatter.dart';
 import 'package:apod/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() {
+  initializeDateFormatting('pt_BR', null);
+
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,4 +23,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
