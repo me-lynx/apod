@@ -1,4 +1,4 @@
-# Projeto APOD
+# Projeto APOD - Versão do Flutter: 3.19.0-9.0.pre.155
 
 Este projeto é uma aplicação Flutter que utiliza a API Astronomy Picture of the Day (APOD) da NASA para exibir imagens astronômicas diárias e suas descrições.
 
