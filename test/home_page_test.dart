@@ -1,4 +1,3 @@
-import 'package:apod/apod_hive.dart';
 import 'package:apod/cubits/apod_cubit.dart';
 import 'package:apod/presentation/home_page.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +19,6 @@ void main() {
 
       initializeDateFormatting('pt_BR', null);
       Hive.initFlutter();
-      Hive.registerAdapter(ApodHiveAdapter());
     });
 
     testWidgets('Renders HomePage correctly', (WidgetTester tester) async {
@@ -28,7 +26,7 @@ void main() {
         MaterialApp(
           home: BlocProvider<ApodCubit>.value(
             value: apodCubit,
-            child: const HomePage(),
+            child: HomePage(),
           ),
         ),
       );

@@ -1,5 +1,7 @@
 import 'package:apod/cubits/apod_cubit.dart';
-import 'package:apod/data/apod_local_datasource.dart';
+import 'package:apod/cubits/images_cubit.dart';
+import 'package:apod/cubits/images_state.dart';
+import 'package:apod/data/sqflite_apod_datasource.dart';
 import 'package:apod/models/apod.dart';
 import 'package:apod/presentation/apod_page.dart';
 import 'package:apod/cubits/apod_state.dart';
@@ -7,9 +9,15 @@ import 'package:apod/helpers/date_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:apod/data/apod_remote_datasource.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sqflite/sqflite.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Database database;
+
+  const HomePage({
+    super.key,
+    required this.database,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -19,9 +27,6 @@ class _HomePageState extends State<HomePage> {
   BrazilianDateFormat brazilianDateFormat = BrazilianDateFormat();
   final double imageWidth = 100;
   final double imageHeight = 100;
-  bool isInternetUrl(String url) {
-    return url.startsWith('http') || url.startsWith('https');
-  }
 
   @override
   void initState() {
@@ -32,9 +37,20 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: BlocProvider(
-        create: (context) =>
-            ApodCubit(ApodRemoteDataSource(), ApodLocalDataSource()),
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<ApodCubit>(
+            create: (context) => ApodCubit(
+              ApodRemoteDataSource(),
+            ),
+          ),
+          BlocProvider<ImagesCubit>(
+            create: (context) => ImagesCubit(
+              database: widget.database,
+              dataSource: SqfliteAPODDataSource(database: widget.database),
+            ),
+          ),
+        ],
         child: BlocConsumer<ApodCubit, ApodState>(
           listener: (context, state) {
             if (state.errorMessage.isNotEmpty) {}
@@ -71,9 +87,25 @@ class _HomePageState extends State<HomePage> {
                           if (picked != null) {
                             final startDate = picked.start;
                             final endDate = picked.end;
-                            if (mounted) {
-                              BlocProvider.of<ApodCubit>(context)
+
+                            if (state.errorMessage.isNotEmpty) {
+                              BlocProvider.of<ImagesCubit>(context)
+                                  .loadImages();
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Verifique sua conexão com a internet'),
+                                ),
+                              );
+                            } else {
+                              var apods = BlocProvider.of<ApodCubit>(context)
                                   .getApods(startDate, endDate);
+
+                              for (var apod in state.apods!) {
+                                BlocProvider.of<ImagesCubit>(context)
+                                    .saveImage(apod);
+                              }
                             }
                           }
                         },
@@ -84,8 +116,7 @@ class _HomePageState extends State<HomePage> {
                 if (state.isLoading)
                   const Center(
                     child: Column(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center, // Adicione esta linha
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Counting stars...',
@@ -162,9 +193,30 @@ class LeadingImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.network(apod.url, fit: BoxFit.cover, width: 300, height: 300,
-        errorBuilder: (context, error, stackTrace) {
-      return const Center(child: Text('No Image'));
-    });
+    return BlocBuilder<ImagesCubit, ImagesState>(
+      builder: (context, state) {
+        if (state is ImagesLoading) {
+          return Image.network(
+            apod.url,
+            fit: BoxFit.cover,
+            width: 300,
+            height: 300,
+            errorBuilder: (context, error, stackTrace) {
+              return const Center(child: Text('No Image'));
+            },
+          );
+        }
+
+        return Image.network(
+          apod.url,
+          fit: BoxFit.cover,
+          width: 300,
+          height: 300,
+          errorBuilder: (context, error, stackTrace) {
+            return const Center(child: Text('No Image'));
+          },
+        );
+      },
+    );
   }
 }
