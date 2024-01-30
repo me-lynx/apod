@@ -1,11 +1,9 @@
-import 'dart:io';
-import 'package:apod/connection_helper.dart';
 import 'package:apod/cubits/apod_cubit.dart';
 import 'package:apod/data/apod_local_datasource.dart';
+import 'package:apod/models/apod.dart';
 import 'package:apod/presentation/apod_page.dart';
 import 'package:apod/cubits/apod_state.dart';
 import 'package:apod/helpers/date_formatter.dart';
-import 'package:apod/helpers/path_provider_save_images.dart';
 import 'package:flutter/material.dart';
 import 'package:apod/data/apod_remote_datasource.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,7 +48,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       const Expanded(
                         child: Text(
-                          'Busca de APOD por data',
+                          'Search APODS',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 24,
@@ -85,56 +83,25 @@ class _HomePageState extends State<HomePage> {
                 ),
                 if (state.isLoading)
                   const Center(
-                    child: CircularProgressIndicator(),
+                    child: Column(
+                      mainAxisAlignment:
+                          MainAxisAlignment.center, // Adicione esta linha
+                      children: [
+                        Text(
+                          'Counting stars...',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        SizedBox(height: 16),
+                        CircularProgressIndicator(),
+                      ],
+                    ),
                   ),
                 Expanded(
                   child: ListView.builder(
                     itemCount: state.apods!.length,
                     itemBuilder: (context, index) {
                       final apod = state.apods![index];
-                      return ListTile(
-                        title: Text(
-                          apod.title,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(state.startDate != null
-                            ? brazilianDateFormat.format(state.startDate!)
-                            : 'Tap to select'),
-                        leading: isInternetUrl(apod.url)
-                            ? Image.network(
-                                apod.url,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return const Center(
-                                      child: Text('Sem imagem'));
-                                },
-                              )
-                            : FutureBuilder<String>(
-                                future: getFilePath('apod_${apod.date}.jpg'),
-                                builder: (BuildContext context,
-                                    AsyncSnapshot<String> snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.done) {
-                                    if (snapshot.hasError) {
-                                      return const Center(
-                                          child: Text('Sem imagem'));
-                                    } else {
-                                      return Image.file(
-                                        File(snapshot.data!),
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return const Center(
-                                              child: Text('Sem imagem'));
-                                        },
-                                      );
-                                    }
-                                  } else {
-                                    // O caminho do arquivo ainda está sendo obtido. Exiba um indicador de progresso.
-                                    return const CircularProgressIndicator();
-                                  }
-                                },
-                              ),
+                      return GestureDetector(
                         onTap: () {
                           Navigator.push(
                             context,
@@ -143,83 +110,61 @@ class _HomePageState extends State<HomePage> {
                             ),
                           );
                         },
+                        child: Card(
+                          color: Colors.black,
+                          surfaceTintColor: Colors.red,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(22),
+                                  child: Text(
+                                    apod.title,
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 20),
+                                  ),
+                                ),
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: LeadingImage(
+                                    apod: apod,
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Divider(color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
                       );
                     },
                   ),
                 ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: state.apods!.length,
-                    itemBuilder: (context, index) {
-                      final apod = state.apods![index];
-                      return ListTile(
-                        title: Text(
-                          apod.title,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        subtitle: Text(state.startDate != null
-                            ? brazilianDateFormat.format(state.startDate!)
-                            : 'Tap to select'),
-                        leading: FutureBuilder<bool>(
-                          future: hasInternetConnection(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<bool> snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.done) {
-                              if (snapshot.data == true) {
-                                return Image.network(
-                                  apod.url,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Center(
-                                        child: Text('Sem imagem'));
-                                  },
-                                );
-                              } else {
-                                return FutureBuilder<String>(
-                                  future: getFilePath('apod_${apod.date}.jpg'),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<String> snapshot) {
-                                    if (snapshot.connectionState ==
-                                        ConnectionState.done) {
-                                      // O caminho do arquivo foi obtido com sucesso. Carregue a imagem.
-                                      return Image.file(
-                                        File(snapshot.data!),
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return const Center(
-                                              child: Text('Sem imagem'));
-                                        },
-                                      );
-                                    } else {
-                                      return const CircularProgressIndicator();
-                                    }
-                                  },
-                                );
-                              }
-                            } else {
-                              return const CircularProgressIndicator();
-                            }
-                          },
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ApodPage(apod: apod),
-                            ),
-                          );
-                        },
-                      );
-                    },
-                  ),
-                )
               ],
             );
           },
         ),
       ),
     );
+  }
+}
+
+class LeadingImage extends StatelessWidget {
+  const LeadingImage({
+    super.key,
+    required this.apod,
+  });
+
+  final Apod apod;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(apod.url, fit: BoxFit.cover, width: 300, height: 300,
+        errorBuilder: (context, error, stackTrace) {
+      return const Center(child: Text('No Image'));
+    });
   }
 }
