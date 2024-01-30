@@ -33,3 +33,8 @@ Contribuições são bem-vindas! Se você encontrar um bug ou quiser adicionar u
 ## Licença
 
 Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+
+## Images 
+
+![Screenshot](https://raw.githubusercontent.com/me-lynx/apod/main/screenshots/Screenshot_1706572152.png?token=GHSAT0AAAAAACNC5KOH2M3EFMOIADWVEB7MZNYIGNQ)
