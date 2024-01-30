@@ -37,5 +37,5 @@ Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICEN
 
 ## Images 
 
-![Screenshot](https://raw.githubusercontent.com/me-lynx/apod/main/screenshots/Screenshot_1706572152.png?token=GHSAT0AAAAAACNC5KOH2M3EFMOIADWVEB7MZNYIGNQ)
-![Screenshot](https://raw.githubusercontent.com/me-lynx/apod/main/screenshots/Screenshot_1706572157.png?token=GHSAT0AAAAAACNC5KOGCO74NFQUWJMQKNYCZNYIGUQ)
+<img src="https://raw.githubusercontent.com/me-lynx/apod/main/screenshots/Screenshot_1706572152.png?token=GHSAT0AAAAAACNC5KOH2M3EFMOIADWVEB7MZNYIGNQ" width="200">
+<img src="(https://raw.githubusercontent.com/me-lynx/apod/main/screenshots/Screenshot_1706572157.png?token=GHSAT0AAAAAACNC5KOGCO74NFQUWJMQKNYCZNYIGUQ" width="200">
