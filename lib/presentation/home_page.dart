@@ -238,12 +238,12 @@ void loadImagesIfDatesPicked(DateTime start, DateTime end, BuildContext _) {
 Widget buildImagesBlocBuilder() {
   return BlocBuilder<ImagesCubit, ImagesState>(
     builder: (context, state) {
-      if (state is ImagesLoaded) {
+      if (state.images!.isNotEmpty) {
         return Expanded(
             child: ListView.builder(
-          itemCount: state.images.length,
+          itemCount: state.images!.length,
           itemBuilder: (context, index) {
-            final apod = state.images[index];
+            final apod = state.images![index];
             return GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -286,7 +286,7 @@ Widget buildImagesBlocBuilder() {
             );
           },
         ));
-      } else if (state is ImagesError) {
+      } else if (state.errorMessage.isNotEmpty) {
         return const Center(
           child: Text(
             'There was a problem loading the images. Please check your spaceship\'s communication system and try again.',

@@ -10,18 +10,18 @@ class ImagesCubit extends Cubit<ImagesState> {
 
   ImagesCubit({
     required this.database,
-  }) : super(ImagesInitial());
+  }) : super(ImagesState.initial());
 
   void loadImages(DateTime startDate, DateTime endDate) async {
     try {
       List<Apod> images = await database.getApods(startDate, endDate);
       if (images.isEmpty) {
-        emit(ImagesError());
+        emit(ImagesState.error(''));
       } else {
-        emit(ImagesLoaded(images));
+        emit(ImagesState.success(images));
       }
     } catch (e) {
-      emit(ImagesError());
+      emit(ImagesState.error(''));
     }
   }
 
@@ -40,7 +40,7 @@ class ImagesCubit extends Cubit<ImagesState> {
       Apod apod, DateTime startDate, DateTime endDate) async {
     try {
       if (await imageIsDownloaded(apod.url, startDate, endDate)) {
-        emit(ImageSaved());
+        emit(ImagesState.saved(apod.path!));
         return;
       }
 
@@ -56,7 +56,7 @@ class ImagesCubit extends Cubit<ImagesState> {
       await database.saveImage(newApod.title, newApod.explanation, newApod.url,
           newApod.date, newApod.path!);
     } catch (_) {
-      emit(ImageSaveError());
+      emit(ImagesState.error(''));
     }
   }
 

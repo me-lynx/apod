@@ -50,11 +50,11 @@ void main() {
     });
 
     test('saveImage inserts data into the database', () async {
-      final title = 'Test Title';
-      final explanation = 'Test Explanation';
-      final url = 'Test Url';
-      final date = '2022-01-01';
-      final path = 'Test Path';
+      const title = 'Test Title';
+      const explanation = 'Test Explanation';
+      const url = 'Test Url';
+      const date = '2022-01-01';
+      const path = 'Test Path';
 
       when(mockDatabase.insert(
         'APOD',
@@ -84,7 +84,7 @@ void main() {
     });
 
     test('close closes the database', () async {
-      when(mockDatabase.close()).thenAnswer((_) async => null);
+      when(mockDatabase.close()).thenAnswer((_) async => {});
 
       await databaseService.close();
 
