@@ -1,3 +1,4 @@
+import 'package:apod/models/apod.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -17,9 +18,14 @@ class DatabaseService {
     return this;
   }
 
-  Future<List<String>> getApods() async {
-    final List<Map<String, dynamic>> maps = await _database.query('APOD');
-    return maps.map((map) => map['path'] as String).toList();
+  Future<List<Apod>> getApods(DateTime startDate, DateTime endDate) async {
+    final List<Map<String, dynamic>> maps = await _database.query(
+      'APOD',
+      where: 'date BETWEEN ? AND ?',
+      whereArgs: [startDate, endDate],
+    );
+
+    return maps.map((map) => Apod.fromMap(map)).toList();
   }
 
   Future<void> saveImage(String title, String explanation, String url,

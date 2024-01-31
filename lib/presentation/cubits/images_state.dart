@@ -1,3 +1,5 @@
+import 'package:apod/models/apod.dart';
+
 abstract class ImagesState {}
 
 class ImagesInitial extends ImagesState {}
@@ -5,9 +7,9 @@ class ImagesInitial extends ImagesState {}
 class ImagesLoading extends ImagesState {}
 
 class ImagesLoaded extends ImagesState {
-  final List<String> imagePaths;
+  final List<Apod> images;
 
-  ImagesLoaded(this.imagePaths);
+  ImagesLoaded(this.images);
 }
 
 class ImagesError extends ImagesState {}

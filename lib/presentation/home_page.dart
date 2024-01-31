@@ -1,3 +1,4 @@
+import 'package:apod/helpers/connection_helper.dart';
 import 'package:apod/presentation/cubits/apod_cubit.dart';
 import 'package:apod/presentation/cubits/images_cubit.dart';
 import 'package:apod/presentation/cubits/images_state.dart';
@@ -24,8 +25,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   BrazilianDateFormat brazilianDateFormat = BrazilianDateFormat();
+  ConnectionHelper connectionHelper = ConnectionHelper();
   final double imageWidth = 100;
   final double imageHeight = 100;
+  late ApodCubit apodCubit;
+  late ImagesCubit imagesCubit;
 
   @override
   void initState() {
@@ -86,12 +90,20 @@ class _HomePageState extends State<HomePage> {
                             final startDate = picked.start;
                             final endDate = picked.end;
 
-                            await BlocProvider.of<ApodCubit>(context)
-                                .getApods(startDate, endDate);
+                            final verify =
+                                await connectionHelper.checkConnection();
 
-                            for (var apod in state.apods!) {
-                              await BlocProvider.of<ImagesCubit>(context)
-                                  .saveImage(apod);
+                            if (verify) {
+                              await BlocProvider.of<ApodCubit>(context)
+                                  .getApods(startDate, endDate);
+
+                              for (var apod in state.apods!) {
+                                await BlocProvider.of<ImagesCubit>(context)
+                                    .saveImage(apod);
+                              }
+                            } else {
+                              BlocProvider.of<ImagesCubit>(context)
+                                  .loadImages(picked.start, picked.end);
                             }
                           }
                         },
@@ -179,29 +191,13 @@ class LeadingImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ImagesCubit, ImagesState>(
-      builder: (context, state) {
-        if (state is ImagesLoading) {
-          return Image.network(
-            apod.url,
-            fit: BoxFit.cover,
-            width: 300,
-            height: 300,
-            errorBuilder: (context, error, stackTrace) {
-              return const Center(child: Text('No Image'));
-            },
-          );
-        }
-
-        return Image.network(
-          apod.url,
-          fit: BoxFit.cover,
-          width: 300,
-          height: 300,
-          errorBuilder: (context, error, stackTrace) {
-            return const Center(child: Text('No Image'));
-          },
-        );
+    return Image.network(
+      apod.url,
+      fit: BoxFit.cover,
+      width: 300,
+      height: 300,
+      errorBuilder: (context, error, stackTrace) {
+        return const Center(child: Text('No Image'));
       },
     );
   }

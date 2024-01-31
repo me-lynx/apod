@@ -39,6 +39,7 @@ dependencies:
   flutter_network_connectivity: ^0.0.6
   sqflite: ^2.3.2
   get_it: ^7.6.7
+  http: ^1.2.0
 
 
   # The following adds the Cupertino Icons font to your application.

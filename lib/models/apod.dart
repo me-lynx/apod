@@ -21,6 +21,16 @@ class Apod {
     );
   }
 
+  factory Apod.fromMap(Map<String, dynamic> map) {
+    return Apod(
+      title: map['title'] as String,
+      explanation: map['explanation'] as String,
+      url: map['url'] as String,
+      date: map['date'] as String,
+      path: map['path'] as String?,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'title': title,

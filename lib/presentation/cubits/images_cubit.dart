@@ -12,10 +12,10 @@ class ImagesCubit extends Cubit<ImagesState> {
     required this.database,
   }) : super(ImagesInitial());
 
-  void loadImages() async {
+  void loadImages(DateTime startDate, DateTime endDate) async {
     try {
-      List<String> imagePaths = await database.getApods();
-      emit(ImagesLoaded(imagePaths));
+      List<Apod> images = await database.getApods(startDate, endDate);
+      emit(ImagesLoaded(images));
     } catch (e) {
       emit(ImagesError());
     }
