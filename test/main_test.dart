@@ -29,5 +29,16 @@ void main() {
 
       expect(find.byType(HomePage), findsOneWidget);
     });
+    testWidgets('creates HomePage with correct DatabaseService',
+        (WidgetTester tester) async {
+      final mockDatabaseService = MockDatabaseService();
+
+      await tester.pumpWidget(
+        MyApp(databaseService: mockDatabaseService),
+      );
+
+      final HomePage homePage = tester.widget(find.byType(HomePage));
+      expect(homePage.database, mockDatabaseService);
+    });
   });
 }
