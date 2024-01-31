@@ -3,10 +3,10 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as path;
 
 class DatabaseService {
-  late Database _database;
+  late Database? database;
 
   Future<DatabaseService> init() async {
-    _database = await openDatabase(
+    database = await openDatabase(
       path.join(await getDatabasesPath(), 'apod_database.db'),
       version: 4,
       onCreate: (db, version) {
@@ -28,7 +28,7 @@ class DatabaseService {
     String endDateString =
         "${endDateEdited.year.toString().padLeft(4, '0')}-${endDateEdited.month.toString().padLeft(2, '0')}-${endDateEdited.day.toString().padLeft(2, '0')}";
 
-    final List<Map<String, dynamic>> maps = await _database.query(
+    final List<Map<String, dynamic>> maps = await database!.query(
       'APOD',
       where: 'date BETWEEN ? AND ?',
       whereArgs: [startDateString, endDateString],
@@ -47,7 +47,7 @@ class DatabaseService {
       'path': path
     };
 
-    await _database.insert(
+    await database?.insert(
       'APOD',
       values,
       conflictAlgorithm: ConflictAlgorithm.ignore,
@@ -55,6 +55,6 @@ class DatabaseService {
   }
 
   Future close() async {
-    await _database.close();
+    await database?.close();
   }
 }
