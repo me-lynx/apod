@@ -1,32 +1,34 @@
+import 'package:apod/data/apod_remote_datasource.dart';
+import 'package:apod/database_service.dart';
 import 'package:apod/presentation/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+
+final getIt = GetIt.instance;
+
+void setup() {
+  getIt.registerSingleton<ApodRemoteDataSource>(ApodRemoteDataSource());
+
+  getIt.registerSingleton<DatabaseService>(
+    DatabaseService(),
+  );
+}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  final database = await openDatabase(
-    join(await getDatabasesPath(), 'apod_database.db'),
-    version: 2,
-    onCreate: (db, version) {
-      return db.execute(
-        "CREATE TABLE APOD(title TEXT, explanation TEXT, url TEXT, date TEXT, path TEXT)",
-      );
-    },
-  );
+  final DatabaseService databaseService = await DatabaseService().init();
 
   initializeDateFormatting('pt_BR', null);
 
   runApp(MyApp(
-    database: database,
+    databaseService: databaseService,
   ));
 }
 
 class MyApp extends StatelessWidget {
-  final Database database;
-  const MyApp({super.key, required this.database});
+  final DatabaseService databaseService;
+  const MyApp({super.key, required this.databaseService});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: HomePage(
-        database: database,
+        database: databaseService,
       ),
     );
   }

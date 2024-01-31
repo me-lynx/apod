@@ -1,6 +1,6 @@
 import 'package:apod/models/apod.dart';
 import 'package:apod/data/apod_remote_datasource.dart';
-import 'package:apod/cubits/apod_state.dart';
+import 'package:apod/presentation/cubits/apod_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ApodCubit extends Cubit<ApodState> {

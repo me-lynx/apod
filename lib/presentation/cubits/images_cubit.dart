@@ -1,31 +1,22 @@
-import 'package:apod/cubits/images_state.dart';
-import 'package:apod/data/sqflite_apod_datasource.dart';
+import 'package:apod/presentation/cubits/images_state.dart';
+import 'package:apod/database_service.dart';
 import 'package:apod/models/apod.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:sqflite/sqflite.dart';
-
 class ImagesCubit extends Cubit<ImagesState> {
-  final Database database;
-  final SqfliteAPODDataSource dataSource;
+  final DatabaseService database;
 
   ImagesCubit({
-    required this.dataSource,
     required this.database,
   }) : super(ImagesInitial());
 
-  Future<void> loadImages() async {
-    emit(ImagesLoading());
+  void loadImages() async {
     try {
-      await database.transaction((txn) async {
-        List<Map> maps = await txn.query('APOD');
-        List<String> imagePaths =
-            maps.map((map) => map['path'] as String).toList();
-        emit(ImagesLoaded(imagePaths));
-      });
-    } catch (_) {
+      List<String> imagePaths = await database.getApods();
+      emit(ImagesLoaded(imagePaths));
+    } catch (e) {
       emit(ImagesError());
     }
   }
@@ -51,7 +42,8 @@ class ImagesCubit extends Cubit<ImagesState> {
         date: apod.date,
         path: path,
       );
-      await dataSource.saveApod(newApod);
+      await database.saveImage(newApod.title, newApod.explanation, newApod.url,
+          newApod.date, newApod.path!);
       emit(ImageSaved());
     } catch (_) {
       emit(ImageSaveError());

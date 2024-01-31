@@ -1,4 +1,5 @@
-import 'package:apod/cubits/apod_cubit.dart';
+import 'package:apod/presentation/cubits/apod_cubit.dart';
+import 'package:apod/database_service.dart';
 import 'package:apod/presentation/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,12 +11,16 @@ import 'package:mockito/mockito.dart';
 
 class MockApodCubit extends Mock implements ApodCubit {}
 
+class MockDatabase extends Mock implements DatabaseService {}
+
 void main() {
   group('HomePage', () {
     late MockApodCubit apodCubit;
+    late MockDatabase database;
 
     setUp(() {
       apodCubit = MockApodCubit();
+      database = MockDatabase();
 
       initializeDateFormatting('pt_BR', null);
       Hive.initFlutter();
@@ -26,7 +31,9 @@ void main() {
         MaterialApp(
           home: BlocProvider<ApodCubit>.value(
             value: apodCubit,
-            child: HomePage(),
+            child: HomePage(
+              database: database,
+            ),
           ),
         ),
       );

@@ -1,18 +1,17 @@
-import 'package:apod/cubits/apod_cubit.dart';
-import 'package:apod/cubits/images_cubit.dart';
-import 'package:apod/cubits/images_state.dart';
-import 'package:apod/data/sqflite_apod_datasource.dart';
+import 'package:apod/presentation/cubits/apod_cubit.dart';
+import 'package:apod/presentation/cubits/images_cubit.dart';
+import 'package:apod/presentation/cubits/images_state.dart';
+import 'package:apod/database_service.dart';
 import 'package:apod/models/apod.dart';
 import 'package:apod/presentation/apod_page.dart';
-import 'package:apod/cubits/apod_state.dart';
+import 'package:apod/presentation/cubits/apod_state.dart';
 import 'package:apod/helpers/date_formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:apod/data/apod_remote_datasource.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sqflite/sqflite.dart';
 
 class HomePage extends StatefulWidget {
-  final Database database;
+  final DatabaseService database;
 
   const HomePage({
     super.key,
@@ -47,7 +46,6 @@ class _HomePageState extends State<HomePage> {
           BlocProvider<ImagesCubit>(
             create: (context) => ImagesCubit(
               database: widget.database,
-              dataSource: SqfliteAPODDataSource(database: widget.database),
             ),
           ),
         ],
@@ -88,24 +86,12 @@ class _HomePageState extends State<HomePage> {
                             final startDate = picked.start;
                             final endDate = picked.end;
 
-                            if (state.errorMessage.isNotEmpty) {
-                              BlocProvider.of<ImagesCubit>(context)
-                                  .loadImages();
+                            await BlocProvider.of<ApodCubit>(context)
+                                .getApods(startDate, endDate);
 
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                      'Verifique sua conexão com a internet'),
-                                ),
-                              );
-                            } else {
-                              var apods = BlocProvider.of<ApodCubit>(context)
-                                  .getApods(startDate, endDate);
-
-                              for (var apod in state.apods!) {
-                                BlocProvider.of<ImagesCubit>(context)
-                                    .saveImage(apod);
-                              }
+                            for (var apod in state.apods!) {
+                              await BlocProvider.of<ImagesCubit>(context)
+                                  .saveImage(apod);
                             }
                           }
                         },
