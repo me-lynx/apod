@@ -15,7 +15,14 @@ class ApodCubit extends Cubit<ApodState> {
     try {
       List<Apod> apods;
       apods = await dataSource.getApods(start, end);
-      emit(state.copyWith(apods: apods, isLoading: false));
+      if (apods.isEmpty) {
+        emit(state.copyWith(
+            errorMessage:
+                'Não há imagens salvas. Por favor, conecte-se à Terra para baixar mais.',
+            isLoading: false));
+      } else {
+        emit(state.copyWith(apods: apods, isLoading: false));
+      }
     } catch (e) {
       emit(state.copyWith(errorMessage: e.toString(), isLoading: false));
     }

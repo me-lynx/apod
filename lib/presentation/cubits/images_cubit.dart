@@ -15,7 +15,11 @@ class ImagesCubit extends Cubit<ImagesState> {
   void loadImages(DateTime startDate, DateTime endDate) async {
     try {
       List<Apod> images = await database.getApods(startDate, endDate);
-      emit(ImagesLoaded(images));
+      if (images.isEmpty) {
+        emit(ImagesError());
+      } else {
+        emit(ImagesLoaded(images));
+      }
     } catch (e) {
       emit(ImagesError());
     }
@@ -32,8 +36,14 @@ class ImagesCubit extends Cubit<ImagesState> {
     return path;
   }
 
-  Future<void> saveImage(Apod apod) async {
+  Future<void> saveImage(
+      Apod apod, DateTime startDate, DateTime endDate) async {
     try {
+      if (await imageIsDownloaded(apod.url, startDate, endDate)) {
+        emit(ImageSaved());
+        return;
+      }
+
       final path = await downloadImage(apod.url, '${apod.date}.jpg');
       final newApod = Apod(
         title: apod.title,
@@ -42,11 +52,22 @@ class ImagesCubit extends Cubit<ImagesState> {
         date: apod.date,
         path: path,
       );
+
       await database.saveImage(newApod.title, newApod.explanation, newApod.url,
           newApod.date, newApod.path!);
-      emit(ImageSaved());
     } catch (_) {
       emit(ImageSaveError());
     }
+  }
+
+  Future<bool> imageIsDownloaded(
+      String imageUrl, DateTime startDate, DateTime endDate) async {
+    List<Apod> apods = await database.getApods(startDate, endDate);
+    for (Apod apod in apods) {
+      if (apod.url == imageUrl) {
+        return true;
+      }
+    }
+    return false;
   }
 }
