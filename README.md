@@ -2,6 +2,8 @@
 
 Este projeto é uma aplicação Flutter que utiliza a API Astronomy Picture of the Day (APOD) da NASA para exibir imagens astronômicas diárias e suas descrições.
 
+Funcionando atualmente apenas para Android e iOS. 
+
 ## Cobertura de testes
 Ainda em desenvolvimento, cobertura atual: 35.3%.
 
@@ -38,4 +40,4 @@ Este projeto está licenciado sob a licença MIT. Veja o arquivo [LICENSE](LICEN
 ## Images 
 
 <img src="https://raw.githubusercontent.com/me-lynx/apod/main/screenshots/Screenshot_1706572152.png?token=GHSAT0AAAAAACNC5KOH2M3EFMOIADWVEB7MZNYIGNQ" width="200">
-<img src="(https://raw.githubusercontent.com/me-lynx/apod/main/screenshots/Screenshot_1706572157.png?token=GHSAT0AAAAAACNC5KOGCO74NFQUWJMQKNYCZNYIGUQ" width="200">
+<img src="https://raw.githubusercontent.com/me-lynx/apod/main/screenshots/Screenshot_1706572157.png?token=GHSAT0AAAAAACNC5KOGCO74NFQUWJMQKNYCZNYIGUQ" width="200">
