@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 InterceptorsWrapper createDioInterceptor() {
   return InterceptorsWrapper(
     onRequest: (options, handler) {
-      const apiKey "";
+      const apiKey = '';
 
       options.queryParameters['api_key'] = apiKey;
 
